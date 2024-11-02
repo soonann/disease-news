@@ -5,16 +5,31 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	page := 1
+	if queryParams.Get("page") != "" {
+
+		p, err := strconv.Atoi(queryParams.Get("page"))
+		if err != nil {
+			fmt.Println("error parsing int")
+		}
+
+		page = p
+
+	}
+
 	// Variables
 	NEWS_API_KEY := os.Getenv("NEWS_API_KEY")
 	keyword := "measles"
 	url := fmt.Sprintf(
-		"https://newsapi.org/v2/everything?q=%s&apiKey=%s",
+		"https://newsapi.org/v2/everything?q=%s&apiKey=%s&page=%d",
 		keyword,
 		NEWS_API_KEY,
+		page,
 	)
 
 	// Get news
