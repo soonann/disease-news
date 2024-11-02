@@ -23,8 +23,8 @@ export default function Home() {
         <table border={1}>
             <tr>{data.list_view_header.map((v, k) => <td key={k + v}> {v} </td>)}</tr> 
             { data.listview.map((v,k) => 
-                <tr>
-                { v.map((vi,ki) => <td dangerouslySetInnerHTML={{ __html: ki == 0 ? vi: vi }}/>)}
+                <tr key={k}>
+                { v.map((vi,ki) => <td key={k + "-" + ki} dangerouslySetInnerHTML={{ __html: ki == 0 ? vi: vi }}/>)}
                 </tr>)
             }
         </table>
