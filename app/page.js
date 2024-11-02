@@ -45,7 +45,7 @@ export default function Home() {
                     })
             }, [])
 
-    if (isLoading) return <p>Loading...</p>
+    if (isLoading && !isLoaded) return <p>Loading...</p>
     if (data) return (
         <div>
              <GoogleMap
