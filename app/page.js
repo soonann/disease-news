@@ -39,14 +39,14 @@ export default function Home() {
             fetch('/api')
             .then((res) => res.json())
             .then((data) => {
-                    console.log(data.markers)
-                    setData(data.markers)
+                    console.log(data)
+                    setData(data)
                     setLoading(false)
                     })
             }, [])
 
     if (isLoading && !isLoaded) return <p>Loading...</p>
-    if (data) return (
+    if (data && data.markers) return (
         <div>
              <GoogleMap
                  mapContainerStyle={defaultMapContainerStyle}
@@ -54,7 +54,7 @@ export default function Home() {
                  zoom={defaultMapZoom}
                  options={defaultMapOptions}
              >
-                 { data.map((x ,i) => <MarkerF
+                 { data.markers.map((x ,i) => <MarkerF
                      position={{ lat: x.lat, lng:x.lon }}
                      key={i}
                  ></MarkerF>) }
