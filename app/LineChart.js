@@ -67,10 +67,10 @@ const ResponsiveLineChart = ({ data = null }) => {
             .range([height, 0]);
 
         // Create line generator
-        // const line = d3.line()
-        //     .x(d => xScale(d.date))
-        //     .y(d => yScale(d.value))
-        //     .curve(d3.curveMonotoneX);
+        const line = d3.line()
+            .x(d => xScale(d.date))
+            .y(d => yScale(d.value))
+            .curve(d3.curveMonotoneX);
 
         // Add X axis
         svg.append('g')
@@ -86,12 +86,12 @@ const ResponsiveLineChart = ({ data = null }) => {
                 .tickSizeOuter(0));
 
         // Add the line path
-        // const path = svg.append('path')
-        //     .datum(parsedData)
-        //     .attr('fill', 'none')
-        //     .attr('stroke', '#3b82f6')
-        //     .attr('stroke-width', 2)
-        //     .attr('d', line);
+        svg.append('path')
+            .datum(parsedData)
+            .attr('fill', 'none')
+            .attr('stroke', '#3b82f6')
+            .attr('stroke-width', 2)
+            .attr('d', line);
 
         // Add dots
         svg.selectAll('circle')
