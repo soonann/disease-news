@@ -44,15 +44,15 @@ const ResponsiveLineChart = ({ data = null }) => {
         d3.select(containerRef.current).selectAll('*').remove();
 
         // Set margins
-        const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+        const margin = { top: 20, right: 20, bottom: 20, left: 40 };
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 
-        // Create SVG
+        // Create SVG with viewBox for responsiveness
         const svg = d3.select(containerRef.current)
             .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
+            .attr('width', '100%')
+            .attr('height', '100%')
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -138,21 +138,17 @@ const ResponsiveLineChart = ({ data = null }) => {
     }, [dimensions, data]);
 
     return (
-        <div>
-            <h1 className="font-bold">
-                {"News related to Measles in the past month"}
-            </h1>
-            <div
-                ref={containerRef}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: '300px',
-                    position: 'relative'
-                }}
-            />
-        </div>
+        <div
+            ref={containerRef}
+            style={{
+                width: '100%',
+                height: '100%',
+                minHeight: '300px',
+                position: 'relative'
+            }}
+        />
     );
 };
 
 export default ResponsiveLineChart;
+

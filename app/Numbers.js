@@ -1,46 +1,50 @@
 // components/BigNumbersDashboard.js
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
-const BigNumbersDashboard = ({
-    newsMonthCount,
-    newsWeekCount,
-    newsDayCount,
-}) => {
+function BigNumbersDashboard(props) {
     const containerRef = useRef();
 
     useEffect(() => {
         const data = {
-            title: 'Measles related News',
             metrics: [
-                { label: 'PAST MONTH', value: newsMonthCount },
-                { label: 'PAST WEEK', value: newsWeekCount },
-                { label: 'TODAY', value: newsDayCount, }
+                { label: 'PAST MONTH', value: props.bigNumber[2] },
+                { label: 'PAST WEEK', value: props.bigNumber[1] },
+                { label: 'TODAY', value: props.bigNumber[0] }
             ]
-        };
-
+        }
         // Clear existing content
         d3.select(containerRef.current).selectAll('*').remove();
 
         // Create container
         const container = d3.select(containerRef.current)
+            .style('display', 'flex')
+            .style('flex-direction', 'column') // Display items in a row
+            .style('gap', '10px')
+            .style('justify-content', 'space-between')
             .style('background', 'white')
             .style('padding', '20px')
-            .style('width', '100%');
+            .style('width', '100%')
+            .style('max-width', '300px')
+            .style('height', '100%')
+            .style('max-height', '600px');
 
-        // Add title
-        container.append('div')
-            .style('font-size', '16px')
-            .style('font-weight', 'bold')
-            .style('margin-bottom', '20px')
-            .text(data.title);
-
-        // Create sections for each metric
+        // Create sections for each metric and make them look like cards
         const sections = container.selectAll('.metric-section')
             .data(data.metrics)
             .join('div')
-            .style('margin-bottom', '20px');
+            .style('flex', '1')
+            .style('display', 'flex')
+            .style('flex-direction', 'column')
+            .style('align-items', 'center')
+            .style('justify-content', 'center')
+            .style('background', '#f8f9fa')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '8px')
+            .style('padding', '20px')
+            .style('box-shadow', '0 1px 1px rgba(0, 0, 0, 0.1)')
+            .style('height', '100%');
 
         // Add label
         sections.append('div')
@@ -65,70 +69,10 @@ const BigNumbersDashboard = ({
                     });
             });
 
-        // Add change indicator if present
-        sections.filter(d => d.change)
-            .append('div')
-            .style('color', d => d.changeColor)
-            .style('font-size', '20px')
-            .text(d => d.change);
-
     }, []);
-    // useEffect(() => {
-    //     // Sample data for the metrics
-    //     const metrics = [
-    //         {
-    //             id: 1,
-    //             label: 'Total News Count (Month)',
-    //             value: newsMonthCount,
-    //             format: 'number',
-    //         },
-    //         {
-    //             id: 2,
-    //             label: 'Total News Count (Week)',
-    //             value: newsWeekCount,
-    //             format: 'number',
-    //         },
-    //         {
-    //             id: 3,
-    //             label: 'Total News Count (Day)',
-    //             value: newsDayCount,
-    //             format: 'number',
-    //         },
-    //     ];
-    //     // Clear existing content
-    //     d3.select(containerRef.current).selectAll('*').remove();
 
-    //     // Create container
-    //     const container = d3.select(containerRef.current)
-    //         .style('display', 'grid')
-    //         .style('grid-template-columns', 'repeat(auto-fit, minmax(200px, 1fr))');
-
-    //     // Create cards for each metric
-    //     const cards = container.selectAll('.metric-card')
-    //         .data(metrics)
-    //         .join('div')
-    //         .attr('class', 'metric-card');
-
-    //     // Add label
-    //     cards.append('div')
-    //         .text(d => d.label);
-
-    //     // Add value with animation
-    //     cards.append('div')
-    //         .each(function(d) {
-    //             const node = d3.select(this);
-    //             const format = d3.format(',');
-
-    //             d3.transition()
-    //                 .duration(1000)
-    //                 .tween(null, () => {
-    //                     const interpolator = d3.interpolateNumber(0, d.value);
-    //                     return (t) => node.text(format(Math.round(interpolator(t))));
-    //                 });
-    //         });
-    // }, []);
-
-    return <div ref={containerRef} />;
+    return <div ref={containerRef} style={{ height: '100vh', width: '100%' }} />;
 };
 
 export default BigNumbersDashboard;
+
