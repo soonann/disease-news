@@ -12,6 +12,7 @@
     "@react-google-maps/api": "^2.20.3",
     "@vercel/functions": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
+    "d3": "^7.9.0",
     "next": "14.2.16",
     "react": "^18",
     "react-dom": "^18"

@@ -5,6 +5,9 @@ import {
     useJsApiLoader,
 } from "@react-google-maps/api";
 import { useEffect, useState } from "react";
+import LineChart from "./LineChart"
+import BigNumbers from "./Numbers"
+
 
 
 
@@ -36,6 +39,7 @@ export default function Home() {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
     });
+    const [lineChartData, setLineChartData] = useState([])
 
 
     useEffect(() => {
@@ -43,8 +47,17 @@ export default function Home() {
             .then((res) => res.json())
             .then((data) => {
                 console.log(data)
+
                 setData(data)
                 setLoading(false)
+                const lineChartData = [
+                    { date: new Date('2024-01-01'), value: 10 },
+                    { date: new Date('2024-02-01'), value: 15 },
+                    { date: new Date('2024-03-01'), value: 25 },
+                    { date: new Date('2024-04-01'), value: 20 },
+                    { date: new Date('2024-05-01'), value: 30 }
+                ];
+                setLineChartData(lineChartData)
             })
     }, [])
 
@@ -131,10 +144,23 @@ export default function Home() {
                 </table>
             </div>
 
-            <div>
+            <div className="grid grid-cols-4 col-span-3">
+
+                <div className="col-span-1">
+                    <BigNumbers
+                        newsDayCount={1}
+                        newsWeekCount={1}
+                        newsMonthCount={1}
+                    />
+                </div>
+                <div className="col-span-3">
+                    <LineChart
+                        data={lineChartData}
+                    />
+                </div>
 
             </div>
-        </div>
+        </div >
     )
 }
 
