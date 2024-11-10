@@ -1,18 +1,18 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 function BigNumbersDashboard(props) {
     const containerRef = useRef();
+    const [data, setData] = useState({
+        metrics: [
+            { label: 'PAST MONTH', value: props.bigNumber3 },
+            { label: 'PAST WEEK', value: props.bigNumber2 },
+            { label: 'TODAY', value: props.bigNumber1 }
+        ]
+    });
 
     useEffect(() => {
-        const data = {
-            metrics: [
-                { label: 'PAST MONTH', value: props.bigNumber[2] },
-                { label: 'PAST WEEK', value: props.bigNumber[1] },
-                { label: 'TODAY', value: props.bigNumber[0] }
-            ]
-        }
         // Clear existing content
         d3.select(containerRef.current).selectAll('*').remove();
 
@@ -51,26 +51,18 @@ function BigNumbersDashboard(props) {
             .style('font-size', '14px')
             .text(d => d.label);
 
-        // Add value with animation
+        // Add value without animation
         sections.append('div')
             .style('font-size', '36px')
             .style('font-weight', 'bold')
             .style('margin', '5px 0')
-            .each(function(d) {
-                const node = d3.select(this);
-                const format = d3.format(',');
-
-                d3.transition()
-                    .duration(1000)
-                    .tween(null, () => {
-                        const interpolator = d3.interpolateNumber(0, d.value);
-                        return (t) => node.text(format(Math.round(interpolator(t))));
-                    });
-            });
+            .text(d => d3.format(',')(d.value)); // Format number with commas
 
     }, []);
 
-    return <div ref={containerRef} style={{ height: '100vh', width: '100%' }} />;
+    return props.bigNumber1 && props.bigNumber2 && props.bigNumber3 ?
+        <div ref={containerRef} style={{ height: '100vh', width: '100%' }} />
+        : <div> Loading</div>
 };
 
 export default BigNumbersDashboard;

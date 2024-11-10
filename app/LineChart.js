@@ -8,15 +8,7 @@ const ResponsiveLineChart = ({ data = null }) => {
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
     // Sample data if none provided
-    const sampleData = data || [
-        { date: '2024-01-01', value: 30 },
-        { date: '2024-01-02', value: 45 },
-        { date: '2024-01-03', value: 25 },
-        { date: '2024-01-04', value: 60 },
-        { date: '2024-01-05', value: 40 },
-        { date: '2024-01-06', value: 55 },
-        { date: '2024-01-07', value: 35 }
-    ];
+    const sampleData = data
 
     useEffect(() => {
         const handleResize = () => {

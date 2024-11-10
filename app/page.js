@@ -4,12 +4,10 @@ import {
     MarkerF,
     useJsApiLoader,
 } from "@react-google-maps/api";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import LineChart from "./LineChart"
-import BigNumbersDashboard from "./Numbers"
-
-
-
+// import BigNumbersDashboard from "./Numbers"
+import * as d3 from 'd3';
 
 export default function Home() {
 
@@ -33,15 +31,28 @@ export default function Home() {
         // borderRadius: '15px 0px 0px 15px',
     };
 
+
+
     const [allData, setAllData] = useState([])
     const [parsedData, setParsedData] = useState([])
-    const [bigNumber, setBigNumber] = useState([0, 0, 0])
+    const [bigNumber1, setBigNumber1] = useState(0)
+    const [bigNumber2, setBigNumber2] = useState(0)
+    const [bigNumber3, setBigNumber3] = useState(0)
     const [isLoading, setLoading] = useState(true)
     const [active, setActive] = useState(-1)
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API,
     });
     const [lineChartData, setLineChartData] = useState([])
+
+    const containerRef = useRef();
+    const [metrics, setMetrics] = useState({
+        metrics: [
+            { label: 'PAST MONTH', value: bigNumber3 },
+            { label: 'PAST WEEK', value: bigNumber2 },
+            { label: 'TODAY', value: bigNumber1 }
+        ]
+    });
 
     let parseData = (dataArray) => {
         return dataArray.map(data => {
@@ -100,6 +111,54 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
+        // Clear existing content
+        d3.select(containerRef.current).selectAll('*').remove();
+
+        // Create container
+        const container = d3.select(containerRef.current)
+            .style('display', 'flex')
+            .style('flex-direction', 'column') // Display items in a row
+            .style('gap', '10px')
+            .style('justify-content', 'space-between')
+            .style('background', 'white')
+            .style('padding', '20px')
+            .style('width', '100%')
+            .style('max-width', '300px')
+            .style('height', '100%')
+            .style('max-height', '600px');
+
+        // Create sections for each metric and make them look like cards
+        const sections = container.selectAll('.metric-section')
+            .data(metrics.metrics)
+            .join('div')
+            .style('flex', '1')
+            .style('display', 'flex')
+            .style('flex-direction', 'column')
+            .style('align-items', 'center')
+            .style('justify-content', 'center')
+            .style('background', '#f8f9fa')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '8px')
+            .style('padding', '20px')
+            .style('box-shadow', '0 1px 1px rgba(0, 0, 0, 0.1)')
+            .style('height', '100%');
+
+        // Add label
+        sections.append('div')
+            .style('color', '#666')
+            .style('font-size', '14px')
+            .text(d => d.label);
+
+        // Add value without animation
+        sections.append('div')
+            .style('font-size', '36px')
+            .style('font-weight', 'bold')
+            .style('margin', '5px 0')
+            .text(d => d3.format(',')(d.value)); // Format number with commas
+
+    }, [metrics]);
+
+    useEffect(() => {
         if (allData.length < 1) {
             return
         }
@@ -120,23 +179,54 @@ export default function Home() {
         const newsWeekCount = findValuesOneWeekAgo(parsedData).length
         const newsMonthCount = parsedData.length
         console.log([newsDayCount, newsWeekCount, newsMonthCount])
-        setBigNumber([newsDayCount, newsWeekCount, newsMonthCount])
 
-        // console.log(newsDayCount.length)
-        // console.log(newsWeekCount.length)
-        // console.log(newsMonthCount.length)
+        setBigNumber1(newsDayCount)
+        setBigNumber2(newsWeekCount)
+        setBigNumber3(newsMonthCount)
 
-        const lineChartData = [
-            { date: new Date('2024-01-01'), value: 10 },
-            { date: new Date('2024-02-01'), value: 15 },
-            { date: new Date('2024-03-01'), value: 25 },
-            { date: new Date('2024-04-01'), value: 20 },
-            { date: new Date('2024-05-01'), value: 30 }
-        ];
+
+        const reduced = parsedData
+            .reduce((occurrences, element) => {
+                occurrences[element[1]] =
+                    (occurrences[element[1]] || 0) + 1;
+                return occurrences;
+            }, {});
+
+        console.log(reduced)
+
+        const lineChartData = []
+        for (const [key, value] of Object.entries(reduced)) {
+            lineChartData.push({
+                date: new Date(key), value: value
+            })
+            // console.log(`${key}: ${value}`);
+        }
+        // const lineChartData = reduced.forEach((v) => {
+        //     return {
+        //         date: new Date(v), value: reduced[v]
+        //     }
+        // })
+        // const lineChartData = [
+        //     { date: new Date('2024-01-01'), value: 10 },
+        //     { date: new Date('2024-02-01'), value: 15 },
+        //     { date: new Date('2024-03-01'), value: 25 },
+        //     { date: new Date('2024-04-01'), value: 20 },
+        //     { date: new Date('2024-05-01'), value: 30 }
+        // ];
         setLineChartData(lineChartData)
 
 
     }, [parsedData])
+
+    useEffect(() => {
+        setMetrics({
+            metrics: [
+                { label: 'PAST MONTH', value: bigNumber3 },
+                { label: 'PAST WEEK', value: bigNumber2 },
+                { label: 'TODAY', value: bigNumber1 }
+            ]
+        });
+    }, [bigNumber1, bigNumber2, bigNumber3])
 
     let onMarkerClick = (e, i) => {
         // console.log(e)
@@ -229,14 +319,13 @@ export default function Home() {
                     <h1 className="font-bold">
                         {"Number of recent Measles news"}
                     </h1>
-                    <BigNumbersDashboard
-                        bigNumber={bigNumber}
-                    />
+                    <div ref={containerRef} style={{ height: '100vh', width: '100%' }} >
+                    </div>
                 </div>
 
                 <div className="col-span-2 h-full">
                     <h1 className="font-bold">
-                        {"News related to Measles in the past month"}
+                        {"Trend of News related to Measles in past Month"}
                     </h1>
                     <LineChart
                         data={lineChartData}
