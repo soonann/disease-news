@@ -2,13 +2,20 @@ import React from "react";
 import { Chart } from "react-google-charts";
 
 const options = {
-    title: "Line Chart Example",
     hAxis: {
         title: "Date",
         format: "dd MMM"
     },
-    vAxis: { title: "News Count" },
+    vAxis: {
+        title: "News Count",
+    },
     legend: "none",
+    chartArea: {
+        left: 100,
+        top: 10,
+        width: "90%",
+        height: "80%"
+    }
 };
 
 function LineChart({ data }) {

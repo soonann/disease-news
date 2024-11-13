@@ -337,9 +337,10 @@ export default function Home() {
                 </div>
 
                 <div className="col-span-4 h-full">
-                    <h1 className="font-bold">
+                    <h1 className="font-bold max-h-lvh">
                         {"Trend of News related to Measles in past Month"}
                     </h1>
+                    <br />
                     <LineChart data={lineChartData}></LineChart>
 
                 </div>
