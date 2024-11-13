@@ -12,10 +12,13 @@
     "@react-google-maps/api": "^2.20.3",
     "@vercel/functions": "^1.5.0",
     "@vercel/postgres": "^0.10.0",
+    "apexcharts": "^3.54.1",
     "d3": "^7.9.0",
     "next": "14.2.16",
     "react": "^18",
-    "react-dom": "^18"
+    "react-apexcharts": "^1.5.0",
+    "react-dom": "^18",
+    "react-google-charts": "^5.2.1"
   },
   "devDependencies": {
     "@types/node": "^20",

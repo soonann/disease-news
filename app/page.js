@@ -5,9 +5,8 @@ import {
     useJsApiLoader,
 } from "@react-google-maps/api";
 import { useEffect, useState, useRef } from "react";
-import LineChart from "./LineChart"
-// import BigNumbersDashboard from "./Numbers"
 import * as d3 from 'd3';
+import LineChart from "./LineChart"
 
 export default function Home() {
 
@@ -168,6 +167,37 @@ export default function Home() {
         console.log(parsed)
     }, [allData])
 
+    function generateDateData(reduced) {
+        const today = new Date();
+        const data = []; // Array to store the 2D array
+
+        // Iterate through the last 30 days
+        for (let i = 30; i >= 0; i--) {
+            const currentDate = new Date(today);
+            currentDate.setDate(today.getDate() - i); // Set to the date i days ago
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+            // Format the date as dd/mm/yyyy
+            const day = String(currentDate.getDate())
+            const month = monthNames[currentDate.getMonth()]
+            const year = currentDate.getFullYear();
+            const dateString = `${day} ${month} ${year}`;
+
+            // Check if the key exists in the 'reduced' map
+            const value = reduced[dateString] || 0; // Default to 0 if not found
+
+            // Append to the data array
+            // for (const [key, value] of Object.entries(reduced)) {
+            //     lineChartData.push([new Date(key), value])
+            // }
+            data.push([new Date(currentDate), value]);
+        }
+
+        return data;
+    }
+
 
     useEffect(() => {
 
@@ -191,28 +221,13 @@ export default function Home() {
                     (occurrences[element[1]] || 0) + 1;
                 return occurrences;
             }, {});
-
         console.log(reduced)
 
-        const lineChartData = []
-        for (const [key, value] of Object.entries(reduced)) {
-            lineChartData.push({
-                date: new Date(key), value: value
-            })
-            // console.log(`${key}: ${value}`);
-        }
-        // const lineChartData = reduced.forEach((v) => {
-        //     return {
-        //         date: new Date(v), value: reduced[v]
-        //     }
-        // })
-        // const lineChartData = [
-        //     { date: new Date('2024-01-01'), value: 10 },
-        //     { date: new Date('2024-02-01'), value: 15 },
-        //     { date: new Date('2024-03-01'), value: 25 },
-        //     { date: new Date('2024-04-01'), value: 20 },
-        //     { date: new Date('2024-05-01'), value: 30 }
-        // ];
+        // const lineChartData = []
+        // lineChartData.push(["Datetime", "News Count"])
+        const lineChartData = generateDateData(reduced)
+        lineChartData.unshift(["Datetime", "News Count"])
+
         setLineChartData(lineChartData)
 
 
@@ -229,8 +244,6 @@ export default function Home() {
     }, [bigNumber1, bigNumber2, bigNumber3])
 
     let onMarkerClick = (e, i) => {
-        // console.log(e)
-        // console.log(i)
         setActive(i)
     }
 
@@ -314,7 +327,7 @@ export default function Home() {
                     </table>
                 </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 p-2 justify-items-stretch">
+            <div className="grid grid-cols-5 gap-2 p-2 justify-items-stretch">
                 <div className="col-span-1 h-full">
                     <h1 className="font-bold">
                         {"Number of recent Measles news"}
@@ -323,13 +336,12 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="col-span-2 h-full">
+                <div className="col-span-4 h-full">
                     <h1 className="font-bold">
                         {"Trend of News related to Measles in past Month"}
                     </h1>
-                    <LineChart
-                        data={lineChartData}
-                    />
+                    <LineChart data={lineChartData}></LineChart>
+
                 </div>
             </div>
 
