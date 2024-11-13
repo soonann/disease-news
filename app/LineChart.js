@@ -8,6 +8,7 @@ const options = {
     },
     vAxis: {
         title: "News Count",
+        format: '0',
     },
     legend: "none",
     chartArea: {
