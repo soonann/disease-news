@@ -8,6 +8,13 @@ import { useEffect, useState, useRef } from "react";
 import * as d3 from 'd3';
 import LineChart from "./LineChart"
 
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+
 export default function Home() {
 
     const ignoreCols = ["Source", "Species", "Disease", "Deaths", "Cases"]
@@ -244,110 +251,125 @@ export default function Home() {
     }, [bigNumber1, bigNumber2, bigNumber3])
 
     let onMarkerClick = (e, i) => {
-        setActive(i)
+
+        for (let n = 0; n < parsedData.length; n++) {
+
+            if (allData.markers[i].place_name == parsedData[n][4]) {
+                if (i == active) {
+                    setActive(-1)
+                } else {
+                    setActive(n)
+                }
+                return
+            }
+
+        }
     }
+
+    const navItems = ['/']
 
     if (isLoading && !isLoaded) return <p>Loading...</p>
     if (allData && allData.markers) return (
-        <div className="grid grid-rows-2 auto-rows-fr h-full gap-4">
-            <div className="grid grid-cols-3 gap-2 p-2 ">
-                <div className="col-span-2">
-                    <h1 className="font-bold">Map for Measles news in past month</h1>
-                    <GoogleMap
-                        mapContainerStyle={defaultMapContainerStyle}
-                        center={defaultMapCenter}
-                        zoom={defaultMapZoom}
-                        options={defaultMapOptions}
-                    >
-                        {
-                            allData.markers.map((x, i) =>
-                                <MarkerF
-
-                                    position={{
-                                        lat: x.lat,
-                                        lng: x.lon
-                                    }}
-                                    icon={{
-                                        path: google.maps.SymbolPath.CIRCLE,
-                                        scale: 8.5,
-                                        fillColor: "purple",
-                                        fillOpacity: 0.5,
-                                        strokeWeight: 0.2,
-                                    }}
-                                    key={i}
-                                    onClick={(e) => { onMarkerClick(e, i) }}
-                                />)
-                        }
-                    </GoogleMap>
-                </div>
-                <div className="col-span-1 overflow-y-scroll">
-                    <h1 className="font-bold">News Feed for Measles in past month</h1>
-                    <table className="border h-full w-full">
-                        <tbody >
-                            <tr className="text-xs"
-                            >
-                                {
-                                    allData.list_view_header.map(
-                                        (v, k) =>
-                                            ignoreCols.includes(v) ?
-                                                null
-                                                :
-                                                <td
-                                                    key={k + v}
-                                                    className="border"
-                                                >
-                                                    {v}
-                                                </td>
-                                    )
-                                }
-                            </tr>
+        <div>
+            <div className="grid grid-rows-2 auto-rows-fr h-full gap-4">
+                <div className="grid grid-cols-3 gap-2 p-2">
+                    <div className="col-span-2">
+                        <h1 className="font-bold">Map for Measles news in past month</h1>
+                        <GoogleMap
+                            mapContainerStyle={defaultMapContainerStyle}
+                            center={defaultMapCenter}
+                            zoom={defaultMapZoom}
+                            options={defaultMapOptions}
+                        >
                             {
-                                // For each news value in the listview
-                                allData.listview.map((row_v, row_i) =>
-                                    <tr
-                                        key={row_i}
-                                        className={"text-xs" + (row_i == active ? " bg-purple-300" : "")}
-                                    >
-                                        {
-                                            // Create all the cells
-                                            allData.list_view_header.map((cell_v, cell_i) =>
-                                                ignoreCols.includes(cell_v) ?
+                                allData.markers.map((x, i) =>
+                                    <MarkerF
+
+                                        position={{
+                                            lat: x.lat,
+                                            lng: x.lon
+                                        }}
+                                        icon={{
+                                            path: google.maps.SymbolPath.CIRCLE,
+                                            scale: 8.5,
+                                            fillColor: "purple",
+                                            fillOpacity: 0.5,
+                                            strokeWeight: 0.2,
+                                        }}
+                                        key={i}
+                                        onClick={(e) => { onMarkerClick(e, i) }}
+                                    />)
+                            }
+                        </GoogleMap>
+                    </div>
+                    <div className="col-span-1 overflow-y-scroll">
+                        <h1 className="font-bold">News Feed for Measles in past month</h1>
+                        <table className="border h-full w-full">
+                            <tbody >
+                                <tr className="text-xs"
+                                >
+                                    {
+                                        allData.list_view_header.map(
+                                            (v, k) =>
+                                                ignoreCols.includes(v) ?
                                                     null
                                                     :
                                                     <td
-                                                        key={row_i + "-" + cell_i}
+                                                        key={k + v}
                                                         className="border"
-                                                        dangerouslySetInnerHTML={{ __html: row_v[cell_i] ?? 0 }}
-                                                    />
-                                            )
-                                        }
-                                    </tr>)
-                            }
-                        </tbody>
-                    </table>
+                                                    >
+                                                        {v}
+                                                    </td>
+                                        )
+                                    }
+                                </tr>
+                                {
+                                    // For each news value in the listview
+                                    allData.listview.map((row_v, row_i) =>
+                                        <tr
+                                            key={row_i}
+                                            className={"text-xs" + (row_i == active ? " bg-purple-300" : "")}
+                                        >
+                                            {
+                                                // Create all the cells
+                                                allData.list_view_header.map((cell_v, cell_i) =>
+                                                    ignoreCols.includes(cell_v) ?
+                                                        null
+                                                        :
+                                                        <td
+                                                            key={row_i + "-" + cell_i}
+                                                            className="border"
+                                                            dangerouslySetInnerHTML={{ __html: row_v[cell_i] ?? 0 }}
+                                                        />
+                                                )
+                                            }
+                                        </tr>)
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div className="grid grid-cols-5 gap-2 p-2 justify-items-stretch">
-                <div className="col-span-1 h-full">
-                    <h1 className="font-bold">
-                        {"Number of recent Measles news"}
-                    </h1>
-                    <div ref={containerRef} style={{ height: '100vh', width: '100%' }} >
+                <div className="grid grid-cols-5 gap-2 p-2 justify-items-stretch">
+                    <div className="col-span-1 h-full">
+                        <h1 className="font-bold">
+                            {"Number of recent Measles news"}
+                        </h1>
+                        <div ref={containerRef} style={{ height: '100vh', width: '100%' }} >
+                        </div>
+                    </div>
+
+                    <div className="col-span-4 h-full">
+                        <h1 className="font-bold max-h-lvh">
+                            {"Trend of News related to Measles in past Month"}
+                        </h1>
+                        <br />
+                        <LineChart data={lineChartData}></LineChart>
+
                     </div>
                 </div>
 
-                <div className="col-span-4 h-full">
-                    <h1 className="font-bold max-h-lvh">
-                        {"Trend of News related to Measles in past Month"}
-                    </h1>
-                    <br />
-                    <LineChart data={lineChartData}></LineChart>
-
-                </div>
-            </div>
-
-
-        </div >
+            </div >
+        </div>
     )
 }
 
